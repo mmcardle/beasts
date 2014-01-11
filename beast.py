@@ -21,6 +21,7 @@ DRIVE_ANGER = 'angry'
 DRIVE_HUNGER = 'hungry'
 DRIVE_LUST = 'lustful'
 
+DECISION_PRINT = 'p'
 DECISION_FOOD = 'f'
 DECISION_SAVE = 's'
 DECISION_HORMONES = 'h'
@@ -28,11 +29,53 @@ DECISION_STEROIDS = 'x'
 DECISION_SKIP = 'n'
 DECISION_END = 'e'
 DECISION_QUIT = 'q'
+DECISION_CONTINUE = 'c'
+DECISION_STATS = 'S'
+
+DECISIONS = (
+    (DECISION_PRINT, 'Print Status'),
+    (DECISION_STATS, 'Print Stats'),
+    (DECISION_FOOD, 'Add Food'),
+    (DECISION_SAVE, 'Save Game'),
+    (DECISION_HORMONES, 'Add Hormones - (increases lust)'),
+    (DECISION_STEROIDS, 'Add Hormones - (increases anger)'),
+    (DECISION_SKIP, 'Skip Turns'),
+    (DECISION_END, 'Run to End'),
+    (DECISION_QUIT, 'Quit'),
+    (DECISION_CONTINUE, 'Continue'),
+)
+
+WORLD_DECISION_LOAD = 'l'
+WORLD_DECISION_NEW = 'n'
 
 WORLD_DECISIONS = (
-    DECISION_SAVE,
-    DECISION_FOOD
+    (WORLD_DECISION_LOAD, 'Load Game'),
+    (WORLD_DECISION_NEW, 'New Game')
 )
+
+
+def get_valid_int(message='Input Number'):
+    user_int = raw_input(message)
+    while True:
+        try:
+            return int(user_int)
+        except ValueError:
+            print 'Invalid Choice', user_int
+            user_int = raw_input(message)
+
+
+def get_valid_input(choices):
+    _user_choice = raw_input('Choice: ')
+    choices = (c[0] for c in choices)
+    while _user_choice not in choices:
+        print 'Invalid Choice ', _user_choice
+        _user_choice = raw_input('Choice: ')
+    return _user_choice
+
+
+def print_choices(choices):
+    for user_choice in choices:
+        print user_choice[0], ': ', user_choice[1]
 
 
 class World(object):
@@ -77,8 +120,10 @@ class World(object):
         print 'Max number of beasts', self.max_beasts
         print 'Most Experienced Beast:', self.highest_exp
         print 'Oldest Beast:', self.oldest
-        for round, num_beasts in self.history:
-            print 'Round', round, num_beasts*'|', num_beasts
+        for _round, num_beasts in self.history:
+            print 'Round', _round, num_beasts*'|', num_beasts
+        if not self.history:
+            print 'No Graph'
 
     def add_beast(self, beast):
         self.beasts.append(beast)
@@ -92,45 +137,42 @@ class World(object):
                 break
 
     def run_once(self):
-
         if not self.skip:
-            print 'Press \'%s\' to add food' % DECISION_FOOD
-            print 'Press \'%s\' to Save' % DECISION_SAVE
-            print 'Press \'%s\' to add hormones (increases lust)' % DECISION_HORMONES
-            print 'Press \'%s\' to add steroids (increases anger)' % DECISION_STEROIDS
-            print 'Press \'%s\' to skip turns' % DECISION_SKIP
-            print 'Press \'%s\' to run to end' % DECISION_END
-            print 'Press \'%s\' to Quit' % DECISION_QUIT
-            print 'Press \'Enter\' to continue'
-            decision = raw_input('Choose: ')
-            print ("you entered " + decision)
-            if decision == DECISION_FOOD:
-                amount = raw_input('Amount of food to add, currently %s: '
-                                   % self.food)
-                self.food += int(amount)
-            elif decision == DECISION_SKIP:
-                amount = raw_input('Number of turns to skip: ')
-                self.skip += int(amount)
-            elif decision == DECISION_SAVE:
+            print_choices(DECISIONS)
+            user_choice = get_valid_input(DECISIONS)
+            if user_choice == DECISION_FOOD:
+                message = 'Amount of food to add, currently %s: ' % self.food
+                self.food += get_valid_int(message)
+            elif user_choice == DECISION_SKIP:
+                message = 'Number of turns to skip: '
+                self.skip += get_valid_int(message)
+            elif user_choice == DECISION_SAVE:
                 file_prefix = raw_input('Filename to save '
                                         '( .beasts will be appended ) : ')
                 file_name = '%s.%s' % (file_prefix, 'beasts')
                 pickle.dump(self, open(file_name, 'w'))
                 return
-            elif decision == DECISION_HORMONES:
-                amount = raw_input('Set hormones, currently %s: '
-                                   % self.hormones)
-                self.hormones = int(amount)
-            elif decision == DECISION_STEROIDS:
-                amount = raw_input('Set steroids, currently %s: '
-                                   % self.steroids)
-                self.steroids = int(amount)
-            elif decision == DECISION_END:
+            elif user_choice == DECISION_HORMONES:
+                message = 'Set hormones, currently %s: ' % self.hormones
+                self.hormones = get_valid_int(message)
+            elif user_choice == DECISION_STEROIDS:
+                message = 'Set steroids, currently %s: ' % self.steroids
+                self.steroids = get_valid_int(message)
+            elif user_choice == DECISION_END:
                 self.skip = -1
-            elif decision == 'Q':
+            elif user_choice == DECISION_QUIT:
                 sys.exit()
+            elif user_choice == DECISION_PRINT:
+                print self
+                return
+            elif user_choice == DECISION_CONTINUE:
+                pass
+            elif user_choice == DECISION_STATS:
+                self.print_stats()
+                return
             else:
                 print '### Invalid Choice ###'
+                return
         else:
             self.skip -= 1
 
@@ -156,7 +198,8 @@ class World(object):
                 if child:
                     if len(self.beasts) < MAX_BEASTS:
                         if beast.age < BREEDING_AGE:
-                            print 'Too young to bread %s<%s' % (beast.age, BREEDING_AGE)
+                            print 'Too young to bread %s<%s' % (beast.age,
+                                                                BREEDING_AGE)
                         self.beasts.append(child)
                     else:
                         print 'Too Many Beasts ', MAX_BEASTS
@@ -283,7 +326,8 @@ class Beast(object):
         other.anger -= 2
 
         print self.name, 'fights', other.name
-        print self.name, 'scores', self_score, 'vs', other.name, 'scores', other_score
+        print self.name, 'scores', self_score, 'vs', other.name, 'scores', \
+            other_score
 
         if self_score > other_score:
             self.experience += 2
@@ -302,29 +346,27 @@ class Beast(object):
 
 
 if __name__ == '__main__':
-    print 'Press \'n\' for New Game'
-    print 'Press \'l\' to Load Game'
-    decision = raw_input('Choose: ')
-    if decision == 'n':
+    print_choices(WORLD_DECISIONS)
+    user_choice = get_valid_input(WORLD_DECISIONS)
+    if user_choice == WORLD_DECISION_NEW:
         world = World(beasts=[Beast(), Beast(), Beast()])
         world.run_for(100)
         world.print_world()
         world.print_stats()
-    elif decision == 'l':
+    elif user_choice == WORLD_DECISION_LOAD:
         files = glob.glob('*.beasts')
+        if len(files) == 0:
+            print 'No valid .beasts files'
+            sys.exit(1)
         counter = 1
         for f in files:
             print 'Press \'%s\' to Load %s' % (counter, f)
             counter += 1
-        decision = raw_input('Choose File: ')
-        try:
-            file_index = int(decision) - 1
-            if file_index < len(files):
-                world = pickle.load(open(files[file_index], 'r'))
-                world.run_for(100)
-                world.print_world()
-                world.print_stats()
-            else:
-                raise Exception('Not a valid choice \'%s\''% decision)
-        except ValueError:
-            raise Exception('Not a valid choice \'%s\''% decision)
+        file_index = get_valid_int()
+        if file_index < len(files):
+            world = pickle.load(open(files[file_index], 'r'))
+            world.run_for(100)
+            world.print_world()
+            world.print_stats()
+        else:
+            raise Exception('Not a valid choice \'%s\'' % user_choice)
