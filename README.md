@@ -119,3 +119,17 @@ Until ...
     | Beast 35 |  10  |  1  |  4  |  50.0 | 50.0 | 50.0 |  52 |    51   |   47  |   51   |
     | Beast 36 |  9   |  1  |  5  |  50.0 | 50.0 | 50.0 |  50 |    51   |   51  |   49   |
     +----------+------+-----+-----+-------+------+------+-----+---------+-------+--------+
+
+Final Result
+------------
+
+    World stats
+    Max number of beasts 69
+    Most Experienced Beast: Beast 157 (
+        life:3, age:18, gen:17, spe:50.0, str:50.0,
+        int:50.0, exp:72, lust:36, anger:34, hunger:58
+    )
+    Oldest Beast: Beast 150 (
+        life:0, age:20, gen:17, spe:50.0, str:50.0,
+        int:50.0, exp:63, lust:34, anger:46, hunger:56
+    )
