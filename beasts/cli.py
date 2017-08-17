@@ -1,21 +1,24 @@
-
 import random
 import prettytable
-from random import choice
-from operator import attrgetter
 import glob
 import pickle
 import sys
+
+
+from random import choice
+from operator import attrgetter
+
 __author__ = 'mm'
 
 MAX_BEASTS = 1000
 BREEDING_AGE = 5
 
-WORLD_COUNTER = 1
-WORLD_REPR = u'%s (%s beasts, %s food, round %s, steroids:%s, hormones:%s)'
+WORLD_REPR = '%s (%s beasts, %s food, round %s, steroids:%s, hormones:%s)'
 BEAST_COUNTER = 1
-BEAST_REPR = u'%s (life:%s, age:%s, gen:%s, spe:%s, str:%s, int:%s, exp:%s, ' \
-             u'lust:%s, anger:%s, hunger:%s)'
+BEAST_REPR = (
+    u'%s (life:%s, age:%s, gen:%s, spe:%s, str:%s, '
+    'int:%s, exp:%s, ' u'lust:%s, anger:%s, hunger:%s)'
+)
 
 DRIVE_ANGER = 'angry'
 DRIVE_HUNGER = 'hungry'
@@ -33,8 +36,8 @@ DECISION_CONTINUE = 'c'
 DECISION_STATS = 'S'
 
 DECISIONS = (
-    (DECISION_PRINT, 'Print Status'),
-    (DECISION_STATS, 'Print Stats'),
+    (DECISION_PRINT, 'Print status'),
+    (DECISION_STATS, 'Print stats'),
     (DECISION_FOOD, 'Add Food'),
     (DECISION_SAVE, 'Save Game'),
     (DECISION_HORMONES, 'Add Hormones - (increases lust)'),
@@ -54,28 +57,29 @@ WORLD_DECISIONS = (
 )
 
 
-def get_valid_int(message='Input Number'):
-    user_int = raw_input(message)
+def get_valid_int(message='Input Number '):
+    user_int = input(message)
     while True:
         try:
             return int(user_int)
         except ValueError:
-            print 'Invalid Choice', user_int
-            user_int = raw_input(message)
+            print('Invalid Choice', user_int)
+            user_int = input(message)
 
 
 def get_valid_input(choices):
-    _user_choice = raw_input('Choice: ')
-    choices = (c[0] for c in choices)
+    _user_choice = input('Choice: ')
+    choices = [c[0] for c in choices]
     while _user_choice not in choices:
-        print 'Invalid Choice ', _user_choice
-        _user_choice = raw_input('Choice: ')
+        print('Invalid Choice %s options=%s' % (_user_choice, choices))
+        print_choices(choices)
+        _user_choice = input('Choice: ')
     return _user_choice
 
 
 def print_choices(choices):
     for user_choice in choices:
-        print user_choice[0], ': ', user_choice[1]
+        print("%s: %s" % (user_choice[0], user_choice[1]))
 
 
 class World(object):
@@ -89,8 +93,8 @@ class World(object):
         self.hormones = 0
         self.steroids = 0
         self.skip = 0
-        self.name = u'World %s' % WORLD_COUNTER
-        WORLD_COUNTER += 1
+
+        self.name = u'World'
 
         # Stats
         self.highest_exp = None
@@ -103,7 +107,7 @@ class World(object):
                              self.round, self.steroids, self.hormones)
 
     def print_world(self):
-        print self
+        print(self)
         pt = prettytable.PrettyTable(['name', 'life', 'age', 'gen', 'speed',
                                       'str', 'int', 'exp', DRIVE_LUST,
                                       DRIVE_ANGER, DRIVE_HUNGER])
@@ -113,17 +117,17 @@ class World(object):
                         beast.speed, beast.strength, beast.intelligence,
                         beast.experience, beast.lust, beast.anger,
                         beast.hunger])
-        print pt
+        print(pt)
 
     def print_stats(self):
-        print self.name, 'stats'
-        print 'Max number of beasts', self.max_beasts
-        print 'Most Experienced Beast:', self.highest_exp
-        print 'Oldest Beast:', self.oldest
+        print(self.name, 'stats')
+        print('Max number of beasts', self.max_beasts)
+        print('Most Experienced Beast:', self.highest_exp)
+        print('Oldest Beast:', self.oldest)
         for _round, num_beasts in self.history:
-            print 'Round', _round, num_beasts*'|', num_beasts
+            print('Round', _round, num_beasts*'|', num_beasts)
         if not self.history:
-            print 'No Graph'
+            print('No Graph')
 
     def add_beast(self, beast):
         self.beasts.append(beast)
@@ -133,7 +137,7 @@ class World(object):
             self.run_once()
             self.print_world()
             if len(self.beasts) < 1:
-                print 'World ends after %s rounds.' % self.round
+                print('World ends after %s rounds.' % self.round)
                 break
 
     def run_once(self):
@@ -147,10 +151,11 @@ class World(object):
                 message = 'Number of turns to skip: '
                 self.skip += get_valid_int(message)
             elif user_choice == DECISION_SAVE:
-                file_prefix = raw_input('Filename to save '
-                                        '( .beasts will be appended ) : ')
+                file_prefix = input(
+                    'Filename to save ( .beasts will be appended ) : '
+                )
                 file_name = '%s.%s' % (file_prefix, 'beasts')
-                pickle.dump(self, open(file_name, 'w'))
+                pickle.dump(self, open(file_name, 'wb'))
                 return
             elif user_choice == DECISION_HORMONES:
                 message = 'Set hormones, currently %s: ' % self.hormones
@@ -163,7 +168,7 @@ class World(object):
             elif user_choice == DECISION_QUIT:
                 sys.exit()
             elif user_choice == DECISION_PRINT:
-                print self
+                print(self)
                 return
             elif user_choice == DECISION_CONTINUE:
                 pass
@@ -171,7 +176,7 @@ class World(object):
                 self.print_stats()
                 return
             else:
-                print '### Invalid Choice ###'
+                print('### Invalid Choice ###')
                 return
         else:
             self.skip -= 1
@@ -183,7 +188,7 @@ class World(object):
         for beast in self.beasts:
             beast.age += 1
             drive = beast.get_drive(world)
-            print beast.name, 'is', drive
+            print(beast.name, 'is', drive)
             if drive == DRIVE_ANGER:
 
                 # Fighting
@@ -198,11 +203,11 @@ class World(object):
                 if child:
                     if len(self.beasts) < MAX_BEASTS:
                         if beast.age < BREEDING_AGE:
-                            print 'Too young to bread %s<%s' % (beast.age,
-                                                                BREEDING_AGE)
+                            print('Too young to bread %s<%s' % (beast.age,
+                                                                BREEDING_AGE))
                         self.beasts.append(child)
                     else:
-                        print 'Too Many Beasts ', MAX_BEASTS
+                        print('Too Many Beasts ', MAX_BEASTS)
 
             elif drive == DRIVE_HUNGER:
 
@@ -223,7 +228,7 @@ class World(object):
             self.max_beasts = max(self.max_beasts, len(self.beasts))
 
         for dead_beast in dead:
-            print 'DEAD beast', dead_beast
+            print('DEAD beast', dead_beast)
             self.beasts.remove(dead_beast)
 
         self.history.append((self.round, len(self.beasts)))
@@ -325,24 +330,26 @@ class Beast(object):
         self.anger -= 2
         other.anger -= 2
 
-        print self.name, 'fights', other.name
-        print self.name, 'scores', self_score, 'vs', other.name, 'scores', \
-            other_score
+        print(self.name, 'fights', other.name)
+        print(
+            self.name, 'scores', self_score, 'vs', other.name,
+            'scores', other_score
+        )
 
         if self_score > other_score:
             self.experience += 2
             other.experience += 1
             other.life -= 1
-            print self.name, 'wins'
+            print(self.name, 'wins')
         elif other_score > self_score:
             other.experience += 2
             self.experience += 1
             self.life -= 1
-            print other.name, 'wins'
+            print(other.name, 'wins')
         else:
             self.experience += 1
             other.experience += 1
-            print self.name, 'and', other.name, 'draws'
+            print(self.name, 'and', other.name, 'draws')
 
 
 if __name__ == '__main__':
@@ -356,15 +363,16 @@ if __name__ == '__main__':
     elif user_choice == WORLD_DECISION_LOAD:
         files = glob.glob('*.beasts')
         if len(files) == 0:
-            print 'No valid .beasts files'
+            print('No valid .beasts files')
             sys.exit(1)
         counter = 1
         for f in files:
-            print 'Press \'%s\' to Load %s' % (counter, f)
+            print('Press \'%s\' to Load %s' % (counter, f))
             counter += 1
-        file_index = get_valid_int()
+        file_index = get_valid_int() - 1
+        print(file_index, len(files))
         if file_index < len(files):
-            world = pickle.load(open(files[file_index], 'r'))
+            world = pickle.load(open(files[file_index], 'rb'))
             world.run_for(100)
             world.print_world()
             world.print_stats()

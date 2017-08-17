@@ -1,4 +1,7 @@
-beasts
+Beasts
 ======
 
-Beasts Game
+A game of beast survival Game
+
+
+    python -m beasts.cli
