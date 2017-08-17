@@ -19,6 +19,28 @@ Run a quick game
 Run for 20 turns
 
 
+    Beast 3 is hungry
+    Beast 4 is angry
+    Beast 4 fights Beast 8
+    Beast 4 scores 82125000.0 vs Beast 8 scores 51750000.0
+    Beast 4 wins
+    Beast 5 is lustful
+    Beast 6 is hungry
+    Beast 7 is hungry
+    Beast 8 is hungry
+    Beast 9 is hungry
+    Beast 10 is hungry
+    Beast 11 is lustful
+    Beast 12 is hungry
+    Beast 13 is hungry
+    Beast 14 is hungry
+    Beast 15 is hungry
+    Beast 16 is angry
+    Beast 16 fights Beast 11
+    Beast 16 scores 20625000.0 vs Beast 11 scores 61000000.0
+
+Until ...
+
     +---------+------+-----+-----+-------+------+------+-----+---------+-------+--------+
     |   name  | life | age | gen | speed | str  | int  | exp | lustful | angry | hungry |
     +---------+------+-----+-----+-------+------+------+-----+---------+-------+--------+
@@ -33,6 +55,36 @@ Run for 20 turns
     +---------+------+-----+-----+-------+------+------+-----+---------+-------+--------+
 
 Run for 50 more turns
+
+    Beast 3 is angry
+    Beast 3 fights Beast 5
+    Beast 3 scores 86000000 vs Beast 5 scores 8500000.0
+    Beast 3 wins
+    Beast 4 is hungry
+    Beast 5 is angry
+    Beast 5 fights Beast 3
+    Beast 5 scores 77625000.0 vs Beast 3 scores 11000000
+    Beast 5 wins
+    Beast 9 is hungry
+    Beast 10 is lustful
+    Beast 11 is hungry
+    Beast 12 is angry
+    Beast 12 fights Beast 16
+    Beast 12 scores 70875000.0 vs Beast 16 scores 67500000.0
+    Beast 12 wins
+    Beast 13 is lustful
+    Beast 14 is angry
+    Beast 14 fights Beast 21
+    Beast 14 scores 15000000.0 vs Beast 21 scores 42750000.0
+    Beast 21 wins
+    Beast 15 is lustful
+    Beast 16 is hungry
+    Beast 17 is hungry
+    Beast 18 is angry
+    Beast 18 fights Beast 23
+    Beast 18 scores 7000000.0 vs Beast 23 scores 46375000.0
+
+Until ...
 
     +----------+------+-----+-----+-------+------+------+-----+---------+-------+--------+
     |   name   | life | age | gen | speed | str  | int  | exp | lustful | angry | hungry |
